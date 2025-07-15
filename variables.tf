@@ -8,9 +8,11 @@ variable "instance_type" {
   default = "t3.micro" 
 }
 variable "instance_count" { 
+  type = number
   default = 1 
 }
-variable "lambda_runtime" { 
+variable "lambda_runtime" {
+  type = string
   default = "python3.12" 
 }
 variable "start_cron" {
