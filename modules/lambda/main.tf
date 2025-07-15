@@ -23,7 +23,7 @@ resource "aws_iam_policy" "ec2_policy" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = var.action == "start" ? ["ec2:StartInstances"] : ["ec2:StopInstances"]
+        Action   = var.action == "start" ? ["ec2:StartInstances","ec2:DescribeInstances"] : ["ec2:StopInstances","ec2:DescribeInstances"]
         Resource = "*"
       },
       {
