@@ -14,7 +14,7 @@ variable "instance_count" {
 }
 variable "lambda_runtime" {
   type = string
-  default = "python3.12" 
+  default = "python3.9" 
 }
 variable "start_cron" {
   type = string
