@@ -51,7 +51,7 @@ resource "aws_lambda_function" "this" {
   handler          = var.handler
   runtime          = var.runtime
   role             = aws_iam_role.lambda_role.arn
-
+  timeout          = 315
   environment {
     variables = {
       INSTANCE_ID = var.ec2_instance_id
