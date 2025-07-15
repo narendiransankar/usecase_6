@@ -11,7 +11,7 @@ module "lambda_start" {
   handler            = "start_ec2.lambda_handler"
   runtime            = var.lambda_runtime
   lambda_source      = "${path.module}/modules/lambda/start_ec2.py"
-  ec2_instance_id    = module.ec2.instance_id # Single instance, update for list if needed
+  ec2_instance_id    = module.ec2.instance_id 
   action             = "start"
 }
 
@@ -21,7 +21,7 @@ module "lambda_stop" {
   handler            = "stop_ec2.lambda_handler"
   runtime            = var.lambda_runtime
   lambda_source      = "${path.module}/modules/lambda/stop_ec2.py"
-  ec2_instance_id    = module.ec2.instance_id # Single instance, update for list if needed
+  ec2_instance_id    = module.ec2.instance_id 
   action             = "stop"
 }
 
