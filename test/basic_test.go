@@ -6,17 +6,22 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
-func TestTerraformBasic(t *testing.T) {
+func TestTerraformPlanOnly(t *testing.T) {
     terraformOptions := &terraform.Options{
-        TerraformDir: "../", // or "." depending on your repo structure
+        TerraformDir: "../", // path to your Terraform code
+        Vars: map[string]interface{}{
+            // Add required variables with dummy values, if any
+            "region": "us-east-1",
+            // ...other required vars
+        },
+        PlanFilePath: "tfplan.binary", // optional
     }
 
-    defer terraform.Destroy(t, terraformOptions)
+    // Only run Init and Plan
+    _, err := terraform.InitAndPlanE(t, terraformOptions)
+    assert.NoError(t, err)
 
-    terraform.InitAndApply(t, terraformOptions)
-    // Example: check output variable (if you have one)
-  // output := terraform.Output(t, terraformOptions, "bucket_id")
-  // assert.NotEmpty(t, output)
-    // Dummy assertion, always passes
-    assert.Equal(t, 1, 1)
+    // Optionally, you can parse the plan output for more checks
+    // plan := terraform.Show(t, terraformOptions)
+    // assert.Contains(t, plan, "some resource name")
 }
