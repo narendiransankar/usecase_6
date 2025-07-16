@@ -2,8 +2,13 @@ name: Terraform Deploy
 
 on:
   workflow_dispatch:
+  # push:
+  #   branches:
+  #     - '**'
+  #     - main   
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
+  
 
 jobs:
   terraform:
@@ -11,16 +16,28 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
-
+      id-token: write 
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
+
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Checkout PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          
+      # - name: Set up Python (for Checkov)
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.10'
+
+      # - name: Install Checkov
+      #   run: pip install checkov
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -33,6 +50,13 @@ jobs:
 
       - name: Verify identity
         run: aws sts get-caller-identity
+        
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ap-south-1
 
       - name: Set up TFLint
         uses: terraform-linters/setup-tflint@v4
@@ -46,10 +70,11 @@ jobs:
         run: tflint -f compact
 
       - name: Terraform Init
-        run: terraform init -reconfigure
+        run: terraform init
 
       - name: Terraform Validate
         run: terraform validate
+
 
       - name: Install Conftest (OPA)
         run: |
@@ -62,31 +87,40 @@ jobs:
           terraform plan -out tfplan.binary
           terraform show -json tfplan.binary > tfplan.json
           conftest test tfplan.json -p policy
+          
+      # - uses: actions/checkout@v3
+      #   with:
+      #     ref: ${{ github.event.pull_request.head.ref }}
+    
+      # - name: Render terraform docs and push changes back to PR
+      #   uses: terraform-docs/gh-actions@main
+      #   with:
+      #     working-dir: .
+      #     output-file: README.md
+      #     output-method: inject
+      #     git-push: "true"
+          
+      - name: Generate Terraform Documentation
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: false 
 
-      - name: Set up Terraform Docs
-        run: |
-          curl -sSLo terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.20.0/terraform-docs-v0.20.0-linux-amd64.tar.gz
-          tar -xzf terraform-docs.tar.gz
-          chmod +x terraform-docs
-          sudo mv terraform-docs /usr/local/bin/
-
-
-      - name: Generate README.md
-        run: terraform-docs markdown . > README.md
-
-      - name: Configure Git
+      - name: Commit and push README.md to PR branch
+        if: github.event_name == 'pull_request'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-
-      - name: Commit README.md to PR branch
-        if: github.event_name == 'pull_request'
-        run: |
+          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
           git add README.md
-          git diff --cached --quiet || git commit -m "docs: Update Terraform documentation"
+          git diff --cached --quiet || git commit -m "docs: Update Terraform documentation (auto-generated)"
           git push origin HEAD:${{ github.head_ref }}
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Terraform Plan
         run: terraform plan
 
