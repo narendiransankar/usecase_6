@@ -25,11 +25,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      # - name: Checkout PR branch
-      #   if: github.event_name == 'pull_request'
-      #   run: |
-      #     git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
-      #     git checkout ${{ github.head_ref }}
           
       # - name: Set up Python (for Checkov)
       #   uses: actions/setup-python@v4
@@ -88,18 +83,6 @@ jobs:
           terraform show -json tfplan.binary > tfplan.json
           conftest test tfplan.json -p policy
           
-      # - uses: actions/checkout@v3
-      #   with:
-      #     ref: ${{ github.event.pull_request.head.ref }}
-    
-      # - name: Render terraform docs and push changes back to PR
-      #   uses: terraform-docs/gh-actions@main
-      #   with:
-      #     working-dir: .
-      #     output-file: README.md
-      #     output-method: inject
-      #     git-push: "true"
-          
       - name: Setup Node.js
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/setup-node@v3
@@ -115,7 +98,7 @@ jobs:
           sudo mv terraform-docs /usr/local/bin/
 
       - name: Generate Terraform Docs and Commit
-        if: github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           git config --local user.email "prakashvelusamy1999@.com"
           git config --local user.name "prakashvelusamy-hcl"
