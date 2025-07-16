@@ -37,7 +37,10 @@ jobs:
         run: |
           cd test
           go test -v -timeout 20m .
-   
+
+      - name: Clean up backend override
+        run: rm -f backend_override.tf
+
       - name: Set up Python (for Checkov)
         uses: actions/setup-python@v4
         with:
