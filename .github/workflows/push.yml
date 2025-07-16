@@ -105,7 +105,7 @@ jobs:
           terraform plan -out tfplan.binary
           terraform show -json tfplan.binary > tfplan.json
           conftest test tfplan.json -p policy
-          continue-on-error: true
+        continue-on-error: true
           
       - name: Setup Node.js
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
