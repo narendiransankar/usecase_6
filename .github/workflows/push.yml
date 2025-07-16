@@ -100,32 +100,17 @@ jobs:
       #     output-method: inject
       #     git-push: "true"
           
-      - name: Generate Terraform Documentation
-        uses: terraform-docs/gh-actions@v1.4.1
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Render terraform docs and push changes back to PR
+        uses: terraform-docs/gh-actions@main
         with:
           working-dir: .
           output-file: README.md
           output-method: inject
-          git-push: true
-          git-commit-message: "docs: Update Terraform documentation"
-          git-push-user-name: "GitHub Actions"
-          git-push-user-email: "actions@github.com"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Push README.md to PR branch
-        if: github.event_name == 'pull_request'
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git checkout ${{ github.head_ref }}
-      
-          git add README.md
-      
-          # Only commit if there's a change
-          git diff --cached --quiet || git commit -m "docs: Update Terraform documentation from PR"
-          git push origin HEAD:${{ github.head_ref }}
+          git-push: "true"
           
       - name: Terraform Plan
         run: terraform plan
