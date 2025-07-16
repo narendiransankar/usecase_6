@@ -17,8 +17,8 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write 
-    # env:
-    #   GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
 
 
     steps:
@@ -87,7 +87,18 @@ jobs:
           terraform plan -out tfplan.binary
           terraform show -json tfplan.binary > tfplan.json
           conftest test tfplan.json -p policy
-
+          
+      # - uses: actions/checkout@v3
+      #   with:
+      #     ref: ${{ github.event.pull_request.head.ref }}
+    
+      # - name: Render terraform docs and push changes back to PR
+      #   uses: terraform-docs/gh-actions@main
+      #   with:
+      #     working-dir: .
+      #     output-file: README.md
+      #     output-method: inject
+      #     git-push: "true"
           
       - name: Generate Terraform Documentation
         uses: terraform-docs/gh-actions@v1.4.1
