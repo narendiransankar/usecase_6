@@ -9,7 +9,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   
-
 jobs:
   terraform:
     runs-on: ubuntu-22.04
@@ -101,13 +100,13 @@ jobs:
       #     git-push: "true"
           
       - name: Setup Node.js
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
       - name: Install terraform-docs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
         run: |
           curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
           tar -xzf terraform-docs.tar.gz
