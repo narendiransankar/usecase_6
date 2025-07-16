@@ -108,7 +108,7 @@ jobs:
         continue-on-error: true
           
       - name: Setup Node.js
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/setup-node@v3
         with:
           node-version: '18'
