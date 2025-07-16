@@ -17,8 +17,8 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write 
-    env:
-      GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
+    # env:
+    #   GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
 
 
     steps:
