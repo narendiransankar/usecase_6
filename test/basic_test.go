@@ -11,7 +11,7 @@ func TestTerraformPlanOnly(t *testing.T) {
         TerraformDir: "../", // path to your Terraform code
         Vars: map[string]interface{}{
             // Add required variables with dummy values, if any
-            "region": "us-east-1",
+            //"region": "us-east-1",
             // ...other required vars
         },
         PlanFilePath: "tfplan.binary", // optional
