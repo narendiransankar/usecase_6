@@ -17,19 +17,23 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write 
+
     # env:
     #   GITHUB_TOKEN: ${{ secrets.CICD_TOKEN }}
+
 
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
-      - name: Checkout PR branch
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
+      # - name: Checkout PR branch
+      #   if: github.event_name == 'pull_request'
+      #   run: |
+      #     git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+      #     git checkout ${{ github.head_ref }}
           
       # - name: Set up Python (for Checkov)
       #   uses: actions/setup-python@v4
