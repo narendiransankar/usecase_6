@@ -115,7 +115,7 @@ jobs:
           sudo mv terraform-docs /usr/local/bin/
 
       - name: Generate Terraform Docs and Commit
-        if: github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           git config --local user.email "prakashvelusamy1999@.com"
           git config --local user.name "prakashvelusamy-hcl"
