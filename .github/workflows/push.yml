@@ -33,7 +33,12 @@ jobs:
       - name: Copy backend override for test
         run: cp test/backend_override.tf ./
 
-      - name: Run Terratest
+      - name: Run Terratest    
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ap-south-1 
         run: |
           cd test
           go test -v -timeout 20m .
