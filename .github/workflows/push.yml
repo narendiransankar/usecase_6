@@ -6,9 +6,9 @@ on:
   #   branches:
   #     - '**'
   #     - main   
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  
 
 jobs:
   terraform:
@@ -106,26 +106,21 @@ jobs:
           working-dir: .
           output-file: README.md
           output-method: inject
-          git-push: true
-          git-commit-message: "docs: Update Terraform documentation"
-          git-push-user-name: "GitHub Actions"
-          git-push-user-email: "actions@github.com"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+          git-push: false 
 
-      - name: Push README.md to PR branch
+
+      - name: Commit and push README.md to PR branch
         if: github.event_name == 'pull_request'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
-      
           git add README.md
-      
-          # Only commit if there's a change
-          git diff --cached --quiet || git commit -m "docs: Update Terraform documentation from PR"
+          git diff --cached --quiet || git commit -m "docs: Update Terraform documentation (auto-generated)"
           git push origin HEAD:${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Terraform Plan
         run: terraform plan
